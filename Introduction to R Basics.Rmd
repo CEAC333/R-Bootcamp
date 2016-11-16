@@ -1,0 +1,82 @@
+# Introduction to R Basics
+
+
+2^5
+
+32
+
+```r
+stock.prices <- c(23, 27, 23, 21, 34)
+stock.prices
+```
+
+[1] 23 27 23 21 34
+
+```r
+names(stock.prices) <- c('Mon', 'Tues', 'Weds', 'Thurs', 'Fri')
+stock.prices
+```
+
+Mon  Tues  Weds Thurs   Fri 
+23    27    23    21    34 
+
+```r
+mean(stock.prices)
+[1] 25.6
+```
+
+```r
+stock.prices > 23
+```
+
+Mon  Tues  Weds Thurs   Fri 
+FALSE  TRUE FALSE FALSE  TRUE 
+
+
+```r
+over.23 <- stock.prices > 23
+over.23
+```
+
+Mon  Tues  Weds Thurs   Fri 
+FALSE  TRUE FALSE FALSE  TRUE 
+
+
+```r
+stock.prices
+```
+
+Mon  Tues  Weds Thurs   Fri 
+23    27    23    21    34 
+
+```r
+stock.prices[over.23]
+```
+
+Tues  Fri 
+27   34 
+
+```r
+stock.prices[stock.prices > 23]
+```
+
+Tues  Fri 
+27   34 
+
+
+```r
+max(stock.prices)
+```
+
+[1] 34
+
+```r
+stock.prices[stock.prices == 34]
+```
+
+Fri 
+34 
+
+stock.prices[stock.prices == max(stock.prices)]
+Fri 
+34 
