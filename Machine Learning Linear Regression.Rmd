@@ -1,0 +1,178 @@
+#### Linear Regression 
+
+
+## Part 1
+
+```{r}
+df <- read.csv('student-mat.csv',sep=';')
+head(df)
+summary(df)
+str(df)
+```
+
+# Checking for Null Values
+
+```{r}
+any(is.na(df))
+```
+
+# Loading libraries:
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+library(corrgram)
+library(corrplot)
+```
+
+# Num Only
+
+```{r}
+num.cols <- sapply(df,is.numeric)
+```
+
+# Filter
+
+```{r}
+cor.data <- cor(df[,num.cols])
+print(cor.data)
+```
+
+```{r}
+print(corrplot(cor.data,method = 'color'))
+```
+
+```{r}
+corrgram(df)
+```
+
+```{r}
+corrgram(df,order=TRUE,lower.panel=panel.shade,
+         upper.panel=panel.pie, text.panel=panel.txt)
+
+ggplot(df,aes(x=G3)) + geom_histogram(bins=20,alpha=0.5,fill='blue')
+```
+
+
+## Part 2
+
+```{r}
+library(caTools)
+```
+
+# Set a Seed
+```{r}
+set.seed(101)
+```
+
+#Split up Sample
+
+```{r}
+sample <- sample.split(df$G3,SplitRatio = 0.7)
+```
+
+# 70% of data -> train
+
+```{r}
+train <- subset(df,sample == TRUE)
+```
+
+# 30% will be test
+
+```{r}
+test <- subset(df,sample == FALSE)
+```
+
+# Train and Build Model
+
+```{r}
+model <- lm(G3 ~ ., data = train)
+```
+
+
+# Run Model
+
+# Interpret Model
+
+```{r}
+summary(model)
+```
+
+```{r}
+res <- residuals(model)
+class(res)
+```
+
+```{r}
+res <- as.data.frame(res)
+head(res)
+```
+
+```{r}
+ggplot(res, aes(res)) + geom_histogram(fill='blue',alpha=0.5)
+```
+
+## Part 3
+
+# Predictions
+
+```{r}
+G3.predictions <- predict(model,test)
+```
+
+```{r}
+results <- cbind(G3.predictions,test$G3)
+colnames(results) <- c('predicted','actual')
+results <- as.data.frame(results)
+head(results)
+```
+
+
+# Take Care of Neg Values
+
+```{r}
+to_zero <- function(x){
+  if(x <0){
+    return(0)
+  }else{
+    return(x)
+  }
+}
+```
+
+
+# Apply Zero Function
+
+```{r}
+results$predicted <- sapply(results$predicted, to_zero)
+```
+
+# Mean Squared Error (MSE)
+
+```{r}
+mse <- mean((results$actual - results$predicted)^2)
+print('MSE')
+print(mse)
+```
+
+# RMSE
+
+```{r}
+print(mse^0.5)
+```
+
+
+#######
+
+```{r}
+SSE <- sum((results$predicted - results$actual)^2)
+SST <- sum((mean(df$G3) - results$actual)^2)
+```
+
+```{r}
+R2 <- 1 - SSE/SST
+print('R2')
+print(R2)
+```
+
