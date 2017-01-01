@@ -1,0 +1,40 @@
+# K Means Clustering Lecture
+
+##  Loading the Datasets & Libraries
+
+```{r}
+library(ISLR)
+library(ggplot2)
+```
+
+```{r}
+head(iris)
+```
+
+## Exploratory Data Analysis
+
+```{r}
+plot <- ggplot(iris,aes(Petal.Length,Petal.Width,color=Species))
+print(plot + geom_point(size=4))
+```
+
+
+## Machine Learning Predictions
+
+```{r}
+set.seed(101)
+irisCluster <- kmeans(iris[,1:4],3,nstart = 20)
+print(irisCluster)
+```
+
+```{r}
+table(irisCluster$cluster,iris$Species)
+```
+
+```{r}
+library(cluster)
+```
+
+```{r}
+clusplot(iris,irisCluster$cluster,color = T, shade = T, labels = 0, lines = 0)
+```
