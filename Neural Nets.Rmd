@@ -1,0 +1,112 @@
+# Neural Nets in R
+
+## Load Libraries
+```{r}
+library(MASS)
+```
+
+```{r}
+head(Boston)
+```
+
+## Structure of Data
+```{r}
+str(Boston)
+```
+
+
+## Checking for NA Values
+
+```{r}
+any(is.na(Boston))
+```
+
+```{r}
+data <- Boston
+```
+## Normalize Our Data
+```{r}
+maxs <- apply(data,2,max)
+maxs
+```
+
+```{r}
+mins <- apply(data,2,min)
+mins
+```
+
+```{r}
+scaled.data <- scale(data,center=mins,scale = maxs-mins)
+scaled <- as.data.frame(scaled.data)
+```
+
+```{r}
+head(scaled)
+head(Boston)
+```
+
+## Machine Learning
+
+```{r}
+library(caTools)
+split <- sample.split(scaled$medv,SplitRatio = 0.7)
+train <- subset(scaled,split==T)
+test <- subset(scaled,split==F)
+head(train)
+```
+
+
+## Neural Net
+```{r}
+library(neuralnet)
+```
+
+```{r}
+n <- names(train)
+n
+```
+
+```{r}
+f <- as.formula(paste("medv ~ ", paste(n[!n %in% "medv"], collapse = " + ")))
+f
+```
+
+```{r}
+nn <- neuralnet(f, data = train, hidden = c(5,3), linear.output = TRUE)
+plot(nn)
+```
+
+
+```{r}
+predicted.nn.values <- compute(nn,test[1:13])
+str(predicted.nn.values)
+```
+
+
+```{r}
+true.predictions <- predicted.nn.values$net.result * 
+  (max(data$medv) - min(data$medv) + min(data$medv))
+```
+
+
+## Convert the Test Data
+
+```{r}
+test.r <- (test$medv) * max((data$medv) - min(data$medv)) + min(data$medv)
+MSE.nn <- sum((test.r - true.predictions)^2/nrow(test))
+MSE.nn
+```
+
+```{r}
+error.df <- data.frame(test.r,true.predictions)
+head(error.df)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot(error.df, aes(x=test.r,y=true.predictions)) + 
+  geom_point() + stat_smooth()
+```
